@@ -1,8 +1,10 @@
 import { getSignedCookies } from "@aws-sdk/cloudfront-signer";
 
-const privateKey = process.env.privateKey;
+const privateKeyRaw = process.env.privateKey;
+const privateKey = privateKeyRaw.replace(/\\n/g, '\n');
+
 const cloudfrontDistributionDomain = process.env.cloudfrontDistributionDomain;
-const keyPairId = rocess.env.keyPairId;
+const keyPairId = process.env.keyPairId;
 const intervalToAddInMilliseconds = 86400 * 1000; // 24 hours in milliseconds 
 
 
