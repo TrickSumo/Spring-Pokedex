@@ -22,7 +22,7 @@ export const handler = async (event) => {
 
     const s3ObjectKey = `${userSub}/*`;
     const url = `${cloudfrontDistributionDomain}/${s3ObjectKey}`;
-
+    const dateLessThan = Math.floor((Date.now() + intervalToAddInMilliseconds) / 1000);
 
     const policy = {
         Statement: [
@@ -30,7 +30,7 @@ export const handler = async (event) => {
                 "Resource": url,
                 Condition: {
                     DateLessThan: {
-                        "AWS:EpochTime": Math.floor((Date.now() + intervalToAddInMilliseconds) / 1000),
+                        "AWS:EpochTime": dateLessThan,
                     },
                 },
             },
@@ -38,16 +38,22 @@ export const handler = async (event) => {
     };
     const policyString = JSON.stringify(policy);
 
-
     const cookies = getSignedCookies({
         keyPairId,
         privateKey,
         policy: policyString,
     });
 
+    const expires = new Date(dateLessThan * 1000).toUTCString();
+
     return {
         statusCode: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json"},
+      cookies: [
+        `CloudFront-Key-Pair-Id=${cookies['CloudFront-Key-Pair-Id']} Expires=${expires}; Path=/; Secure; HttpOnly; SameSite=None;`,
+        `CloudFront-Signature=${cookies['CloudFront-Signature']}; Expires=${expires}; Path=/; Secure; HttpOnly; SameSite=None`,
+        `CloudFront-Policy=${cookies['CloudFront-Policy']}; Expires=${expires}; Path=/; Secure; HttpOnly; SameSite=None;`, 
+     ],
         body: JSON.stringify(cookies),
     };
 
