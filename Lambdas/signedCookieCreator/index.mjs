@@ -13,16 +13,19 @@ export const handler = async (event) => {
     if (!privateKey) {
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'privateKeyy not set in environment variables' }),
+            body: JSON.stringify({ error: 'privateKey not set in environment variables' }),
         };
     }
 
-    const claims = event.requestContext?.authorizer?.claims;
-    const userSub = claims?.sub;
+    const userSub = event?.requestContext?.authorizer?.jwt?.claims?.sub;
+    console.log(userSub);
+    console.log(event, JSON.stringify(event.requestContext?.authorizer));
 
-    const s3ObjectKey = `${userSub}/*`;
+    const s3ObjectKey = "images/*";
+    //`${userSub}/*`;
     const url = `${cloudfrontDistributionDomain}/${s3ObjectKey}`;
     const dateLessThan = Math.floor((Date.now() + intervalToAddInMilliseconds) / 1000);
+
 
     const policy = {
         Statement: [
@@ -38,6 +41,7 @@ export const handler = async (event) => {
     };
     const policyString = JSON.stringify(policy);
 
+
     const cookies = getSignedCookies({
         keyPairId,
         privateKey,
@@ -50,7 +54,7 @@ export const handler = async (event) => {
         statusCode: 200,
         headers: { "Content-Type": "application/json"},
       cookies: [
-        `CloudFront-Key-Pair-Id=${cookies['CloudFront-Key-Pair-Id']} Expires=${expires}; Path=/; Secure; HttpOnly; SameSite=None;`,
+        `CloudFront-Key-Pair-Id=${cookies['CloudFront-Key-Pair-Id']}; Expires=${expires}; Path=/; Secure; HttpOnly; SameSite=None;`,
         `CloudFront-Signature=${cookies['CloudFront-Signature']}; Expires=${expires}; Path=/; Secure; HttpOnly; SameSite=None`,
         `CloudFront-Policy=${cookies['CloudFront-Policy']}; Expires=${expires}; Path=/; Secure; HttpOnly; SameSite=None;`, 
      ],

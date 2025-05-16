@@ -4,7 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 const s3 = new S3Client();
 
 async function generateUploadUrl(filename, contentType, userSub) {
-    console.log("inside 123", filename, contentType);
+    console.log("inside 123", filename, contentType, userSub);
     const bucketName = "springapp-severless-360";
     const key = `images/${userSub}/${filename}`;
 
@@ -29,10 +29,9 @@ export const handler = async (event) => {
         };
     }
 
-    const claims = event.requestContext?.authorizer?.claims;
-    const userSub = claims?.sub;
+    const userSub = event?.requestContext?.authorizer?.jwt?.claims?.sub;
 
-    console.log(event.body);
+    console.log(event.body, JSON.stringify(event.requestContext?.authorizer));
     const url = await generateUploadUrl(filename, contentType, userSub);
     return {
         statusCode: 200,
