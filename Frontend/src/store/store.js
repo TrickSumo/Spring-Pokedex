@@ -8,6 +8,11 @@ const useStore = create((set) => ({
 
    count: 1,
   inc: () => set((state) => ({ count: state.count + 1 })),
+
+  notifications: [],
+  addNotification: (notification) => set((state) => ({
+    notifications: [notification, ...state.notifications].slice(0,3),
+  })),
 }))
 
 export default useStore;
