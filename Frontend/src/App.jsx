@@ -6,13 +6,6 @@ import Header from './components/Header';
 function App() {
   const auth = useAuth();
 
-  const signOutRedirect = () => {
-    const clientId = "18ojho4vqn25edccu8ma5ko3bo";
-    const logoutUri = "<logout uri>";
-    const cognitoDomain = "https://us-east-1ty34xaazv.auth.us-east-1.amazoncognito.com";
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-  };
-
   if (auth.isLoading) {
     return <div>Loading...</div>;
   }

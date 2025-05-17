@@ -24,17 +24,3 @@ export const getUserDetails = () => {
     const userDetails = JSON.parse(decodedPayload);
     return userDetails;
 }
-
-// export const getSignedCookie = async (id) => {
-//     const response = await fetch(`${API_BASE_URL}/getSignedCookie`,
-//         {
-//             method: "GET",
-//             headers: {
-//                 "Content-Type": "application/json",
-//                 Authorization: `Bearer ${getAccessToken()}`,
-//             },
-//             credentials: 'include'
-//         },
-//     );
-//     return response.json();
-// };

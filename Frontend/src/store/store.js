@@ -1,17 +1,28 @@
 import { create } from 'zustand'
 
 const useStore = create((set) => ({
-  bears: 0,
-  increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
-  removeAllBears: () => set({ bears: 0 }),
-  updateBears: (newBears) => set({ bears: newBears }),
-
-   count: 1,
-  inc: () => set((state) => ({ count: state.count + 1 })),
-
   notifications: [],
   addNotification: (notification) => set((state) => ({
-    notifications: [notification, ...state.notifications].slice(0,3),
+    notifications: [notification, ...state.notifications].slice(0,1),
+  })),
+  clearNotifications: () => set(() => ({
+    notifications: [],
+  })),
+
+  status: "ready",
+  setStatus: (text) => set(() => ({
+    status: text,
+  })),
+
+  scannedDetails : {},
+  setScannedDetails: (details) => set(() => ({
+    scannedDetails: details,
+  })),
+
+  momentoDisposableToken: "",
+  setMomentoDisposableToken: (token) => set(() => ({
+
+    momentoDisposableToken: token,
   })),
 }))
 

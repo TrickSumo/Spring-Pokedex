@@ -1,0 +1,123 @@
+/* Container for the header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 20px;
+}
+
+/* Header logo or home link */
+.header .home {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #346230;
+  /* Green color to match theme */
+  cursor: pointer;
+}
+
+/* Notification icon - Floating button for mobile */
+.header .notification {
+  position: fixed;
+  top: 60vh;
+  right: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: #f5bc45;
+  border-radius: 50%;
+  padding: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 101;
+}
+
+.notification-dot {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+/* Notification Drawer */
+.notification-drawer {
+  display: none;
+  position: fixed;
+  bottom: 80px;
+  /* Positioned above the notification button */
+  right: 20px;
+  width: 200px;
+  background-color: white;
+  padding: 15px;
+  border: 1px solid #d0caa8;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  border-radius: 10px;
+  color: #4E6C47;
+}
+
+.notification-drawer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notification-drawer li {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.notification-drawer li:last-child {
+  border-bottom: none;
+}
+
+.notification-drawer.show {
+  display: block;
+  /* Show the drawer */
+  background-color: #fff4d4;
+}
+
+.drawer-close-buutton {
+  position: absolute;
+  top: 0px;
+  right: 6px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .header .notification {
+    top: 48vh;
+    font-size: 1.5rem;
+    padding: 9px;
+  }
+
+  .notification-drawer {
+    top: 48vh;
+  }
+
+  .notification-drawer.show {
+    display: block;
+    /* Show the drawer */
+    background-color: #fffcec;
+  }
+}
+
+@keyframes jiggle {
+  0%   { transform: translateX(0); }
+  15%  { transform: translateX(-6px); }
+  30%  { transform: translateY(6px); }
+  45%  { transform: translateX(-6px); }
+  60%  { transform: translateY(6px); }
+  75%  { transform: translateX(-6px); }
+  90%  { transform: translateY(6px); }
+  100% { transform: translateX(0); }
+}
+
+.jiggle {
+  animation: jiggle 0.6s ease-in-out 3;
+}
+.jiggle:hover {
+  animation: jiggle 0.3s ease-in-out; 
+}

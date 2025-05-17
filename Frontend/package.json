@@ -10,11 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@gomomento/sdk-web": "^1.111.0",
     "oidc-client-ts": "^3.2.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-oidc-context": "^3.3.0",
     "react-router-dom": "^7.6.0",
+    "uuidv4": "^6.2.13",
     "zustand": "^5.0.4"
   },
   "devDependencies": {

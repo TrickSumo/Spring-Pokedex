@@ -1,0 +1,73 @@
+.details-container {
+    background-size: cover;
+    background-position: center center;
+    width: 100vw;
+    height: 100vh;
+    line-height: 3.6rem;
+}
+
+.leaf-image {
+    display: none;
+
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.p {
+    font-size: 1.5rem;
+    color: #4B5845;
+}
+
+.type {
+    font-weight: 600;
+    color: #153F28;
+}
+
+
+.local-name {
+    font-weight: 600;
+    color: #304D36;
+}
+
+.scientific-name {
+    font-weight: 500;
+    color: #525A46;
+}
+
+.scan-details {
+    font-weight: 500;
+    line-height: 3rem;
+    color: #4B5845;
+    text-align: center;
+    background-color: rgba(220, 212, 113, 0.96);
+    padding: 20px;
+    margin-top: 9vh;
+    border-radius: 8px;
+}
+
+.scan-details div{
+    line-height: 1.5rem;
+    margin-bottom: 3vh;
+}
+
+.scan-details img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ccc;
+}
+
+@media (max-width: 768px) {
+    .leaf-image {
+        display: block;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+    }
+}
