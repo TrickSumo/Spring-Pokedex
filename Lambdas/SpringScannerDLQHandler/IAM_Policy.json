@@ -1,0 +1,23 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "sqs:DeleteMessage",
+            "Resource": "arn:aws:sqs:us-east-1::QUEUENAME"
+        },
+         {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "sqs:ReceiveMessage",
+            "Resource": "arn:aws:sqs:us-east-1::QUEUENAME"
+        },
+         {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "sqs:ReceiveMessage",
+            "Resource": "arn:aws:sqs:us-east-1::QUEUENAME"
+        }
+    ]
+}
