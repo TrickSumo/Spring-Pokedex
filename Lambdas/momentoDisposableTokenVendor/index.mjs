@@ -1,6 +1,5 @@
 import {
   AuthClient,
-  DisposableTokenScopes,
   ExpiresIn,
   CredentialProvider,
 } from '@gomomento/sdk';
@@ -12,47 +11,27 @@ const authClient = new AuthClient({
 const PUBSUB_CACHE_NAME = 'publish-subscribe-cache';
 const SHARED_CACHE_NAME = 'shared-cache';
 
-const disposableTokenValidity = 30; // minutes
+const disposableTokenValidity = 60; // minutes
 
-
-async function createDisposableToken(id, userSub) {
-
-  if (!id) { return null; }
-
-  if (id === "topic") {
-    const TOPIC_NAME = userSub;
-    const scope = DisposableTokenScopes.topicSubscribeOnly(
-      PUBSUB_CACHE_NAME,
-      TOPIC_NAME
-    );
-    const tokenResponse = await authClient.generateDisposableToken(
-      scope,
-      ExpiresIn.minutes(disposableTokenValidity)
-    );
-    return tokenResponse;
-  }
-  else {
-    const scope = DisposableTokenScopes.cacheReadOnly(
-      SHARED_CACHE_NAME
-    );
-    const tokenResponse = await authClient.generateDisposableToken(
-      scope,
-      ExpiresIn.minutes(disposableTokenValidity)
-    );
-    return tokenResponse;
-  }
+async function createDisposableToken(userSub) {
+  const TOPIC_NAME = userSub;
+  const scopes = {
+    "permissions":
+      [
+        { "role": "subscribeonly", "cache": PUBSUB_CACHE_NAME, "topic": TOPIC_NAME },
+        { "role": "readonly", "cache": SHARED_CACHE_NAME }
+      ]
+  };
+  const tokenResponse = await authClient.generateDisposableToken(
+    scopes,
+    ExpiresIn.minutes(disposableTokenValidity)
+  );
+  return tokenResponse;
 }
 
-
 export const handler = async (event) => {
-
   const userSub = event?.requestContext?.authorizer?.jwt?.claims?.sub;
-  const { pathParameters } = event;
-  const id = pathParameters?.id;
-
-  console.log(`Received event: ${JSON.stringify(event)}`, userSub, id);
-
-  const momentoToken = await createDisposableToken(id, userSub);
+  const momentoToken = await createDisposableToken(userSub);
   return {
     statusCode: 200,
     body: JSON.stringify({ momentoToken }),
