@@ -4,18 +4,11 @@
         {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
-            "Action": "dynamodb:GetItem",
-            "Resource": "arn:aws:dynamodb:us-east-1::table/TABLENAME"
-        },
-        {
-            "Sid": "VisualEditor0",
-            "Effect": "Allow",
             "Action": [
                 "ssm:GetParameters",
                 "ssm:GetParameter"
             ],
             "Resource": [
-                "arn:aws:ssm:us-east-1::parameter/pokedex/momento",
                 "arn:aws:ssm:us-east-1::parameter/pokedex/cloudfrontDomainName",
                 "arn:aws:ssm:us-east-1::parameter/pokedex/keyPairId",
                 "arn:aws:ssm:us-east-1::parameter/pokedex/privateKey"

@@ -10,8 +10,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@aws-lambda-powertools/logger": "^2.19.1",
     "@aws-sdk/client-s3": "^3.810.0",
     "@aws-sdk/s3-request-presigner": "^3.810.0",
-    "@gomomento/sdk": "^1.111.0"
+    "@gomomento/sdk": "^1.111.0",
+    "@middy/core": "^6.3.0",
+    "@middy/ssm": "^6.3.0"
   }
 }

@@ -1,129 +1,32 @@
-import OpenAI from 'openai';
-const openai = new OpenAI({ apiKey: process.env.openaiAPIKey });
-import { getSignedUrl } from '@aws-sdk/cloudfront-signer';
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import {
-  TopicClient, TopicConfigurations, CredentialProvider
-} from "@gomomento/sdk";
 
-const privateKeyRaw = process.env.privateKey;
-const privateKey = privateKeyRaw.replace(/\\n/g, '\n');
-const cloudfrontDistributionDomain = process.env.cloudfrontDistributionDomain;
-const keyPairId = process.env.keyPairId;
-const intervalToAddInMilliseconds = 150 * 1000; // 150 seconds
 
-const apiKey = process.env.MOMENTO_API_KEY;
-const PUBSUB_CACHE_NAME = 'publish-subscribe-cache';
-const topicClient = new TopicClient({
-  configuration: TopicConfigurations.Lambda.latest(),
-  credentialProvider: CredentialProvider.fromString(apiKey)
-});
+import middy from '@middy/core'
+import ssm from '@middy/ssm';
+import { initTopicClient, publishToTopic } from './lib/momento.mjs';
+import { storeToDynamoDB } from './lib/dynamo.mjs';
+import { createChatCompletion, initOpenAI } from './lib/openai.mjs';
+import { generateSignedUrl } from './lib/cloudfront.mjs';
 
-const tableName = process.env.tableName || "SpringPokedex";
-const client = new DynamoDBClient({});
-const docClient = DynamoDBDocumentClient.from(client);
+export const lambdaHandler = async (event, context) => {
 
-const storeToDynamoDB = async (userId, scanId, gptResponse) => {
-  try {
-    const command = new PutCommand({
-      TableName: tableName,
-      Item: {
-        userId,
-        scanId,
-        gptResponse,
-        date: (new Date()).toISOString().split('T')[0]
-      }
-    });
+  await initTopicClient(context.MOMENTO_API_KEY);
+  await initOpenAI(context.OPENAI_API_KEY);
 
-    const response = await docClient.send(command);
-  }
-  catch (error) {
-    console.error("Error storing data in DynamoDB:", error);
-  }
-}
-
-const publishToTopic = async (userSub, gptResponse, key) => {
-  const topicName = userSub;
-  const type = "ProcessingSuccess";
-  const message = JSON.stringify({ gptResponse, key, type });
-  await topicClient.publish(PUBSUB_CACHE_NAME, topicName, message);
-}
-
-const generateSignedUrl = async (s3ObjectKey) => {
-  const url = `${cloudfrontDistributionDomain}/${s3ObjectKey}`;
-  const policy = {
-    Statement: [
-      {
-        Resource: url,
-        Condition: {
-          DateLessThan: {
-            "AWS:EpochTime": Math.floor((Date.now() + intervalToAddInMilliseconds) / 1000),
-          },
-        },
-      },
-    ],
-  };
-
-  const policyString = JSON.stringify(policy);
-  const signedUrl = getSignedUrl({
-    keyPairId,
-    privateKey,
-    policy: policyString,
-  });
-
-  return signedUrl;
-};
-
-export const handler = async (event) => {
+  const cloudfrontDistributionDomain = context.CLOUDFRONT_DISTRIBUTION_DOMAIN;
+  const keyPairId = context.CLOUDFRONT_KEY_PAIR_ID;
+  const privateKeyRaw = context.CLOUDFRONT_PRIVATE_KEY;
+  const privateKey = privateKeyRaw.replace(/\\n/g, '\n');
 
   const key = decodeURIComponent(
     event.Records[0].s3.object.key.replace(/\+/g, ' ')
   );
 
   const userSub = key.split('/')[1]; // Extract userSub from the key - images are uploaded at /images/userSub/imageName
-  const fileName = key.split('/')[2]; // Extract file name from the key
-  const fileNameWithoutExtension = fileName.split('.').slice(0, -1).join('.'); // Extract file name without extension
 
-  const signedUrl = await generateSignedUrl(key);
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4.1',
-    messages: [
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'text',
-            text: `
-            Identify the species in this image for a Pokédex-like application. Please output the result in JSON format containing the following fields: commonName, scientificName, and info.
-            
-            category: Broad category where the species belongs (e.g., "Birds", "Mammals", "Reptiles").
-            commonName: The common name of the species (e.g., "American Robin").
-            scientificName: The scientific name of the species (e.g., "Turdus migratorius").
-            info: A brief description of the species, including notable traits, habitat, and any interesting facts.
+  const signedUrl = await generateSignedUrl(key, cloudfrontDistributionDomain, keyPairId, privateKey);
 
-            Example Output:
-                        {
-                        "category": "Bird",
-                        "commonName": "American Robin",
-                        "scientificName": "Turdus migratorius",
-                        "info": "The American Robin is a migratory songbird native to North America. Known for its orange-red breast, it is a common sight in gardens and parks during spring and summer."
-                        }
-            Please do not add any string/detials like json in the output 🙏🏽 It is breaking my application!!!  Please Please give output in well formatted json {} only.
-`,
-          },
-          {
-            type: 'image_url',
-            image_url: {
-              url: signedUrl,
-            },
-          },
-        ],
-      },
-    ],
-    max_tokens: 300,
-  });
+  const completion = await createChatCompletion(signedUrl)
 
   const gptResponse = completion.choices[0].message.content;
 
@@ -136,3 +39,21 @@ export const handler = async (event) => {
   };
   return response;
 };
+
+
+export const handler = middy()
+  .use(
+    ssm({
+      fetchData: {
+        MOMENTO_API_KEY: process.env.MOMENTO_API_KEY_PARAM_NAME,
+        CLOUDFRONT_DISTRIBUTION_DOMAIN: process.env.CLOUDFRONT_DISTRIBUTION_DOMAIN_PARAM_NAME,
+        CLOUDFRONT_KEY_PAIR_ID: process.env.CLOUDFRONT_KEY_PAIR_ID_PARAM_NAME,
+        CLOUDFRONT_PRIVATE_KEY: process.env.CLOUDFRONT_PRIVATE_KEY_PARAM_NAME,
+        OPENAI_API_KEY: process.env.OPENAI_API_KEY_PARAM_NAME,
+      },
+      setToContext: true,
+      cache: true,
+      cacheExpiry: 5 * 60 * 1000,
+    })
+  )
+  .handler(lambdaHandler)

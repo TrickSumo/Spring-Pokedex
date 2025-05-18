@@ -1,22 +1,31 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router";
 import { getSignedCookie } from './utils/apis';
 
-
-
 const Auth = () => {
-    const { isAuthenticated, user } = useAuth();
+    const [message, setMessage] = useState("Authenticating...");
+    const { isAuthenticated } = useAuth();
     let navigate = useNavigate();
     useEffect(() => {
         const fetchIdentityId = async () => {
-            const res = await getSignedCookie();
-            navigate("/");
+            try {
+                const res = await getSignedCookie();
+                if (res.message !== "Cookies created successfully!") {
+                    throw new Error("Failed to get signed cookies");
+                }
+                navigate("/");
+            }
+            catch (err) {
+                setMessage("Failed to get signed cookies");
+                console.error(err);
+            }
+
         }
         if (isAuthenticated) fetchIdentityId();
-    })
+    }, [])
     return (
-        <div style={{ display: 'flex', width: '100vh', justifyContent: 'center', alignContent: 'center' }}>Authenticating...</div>
+        <div>{message}</div>
     )
 }
 

@@ -41,7 +41,6 @@ function Header() {
 
       const disposableTokenResponse = await getDisposableTopicToken();
       const authToken = disposableTokenResponse.authToken;
-      console.log("updating", disposableTokenResponse.authToken);
 
       setMomentoDisposableToken(disposableTokenResponse.authToken);
 
@@ -83,7 +82,7 @@ function Header() {
             console.log("🟡 Subscription ended");
           },
         });
-        console.log("🟢 Subscribed successfully", subscription);
+        console.log("🟢 Subscribed successfully");
       } catch (err) {
         console.error("❌ Failed to subscribe:", err);
       }

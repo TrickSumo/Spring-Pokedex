@@ -66,7 +66,7 @@ export const getDisposableTopicToken = async () => {
             headers: createHeaders(),
         },
     );
-    const { momentoToken } = await response.json();
+    const momentoToken  = await response.json();
     return momentoToken;
 }
 

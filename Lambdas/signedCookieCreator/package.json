@@ -10,6 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@aws-sdk/cloudfront-signer": "^3.804.0"
+    "@aws-sdk/cloudfront-signer": "^3.804.0",
+    "@middy/core": "^6.3.0",
+    "@middy/ssm": "^6.3.0"
   }
 }

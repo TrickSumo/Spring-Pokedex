@@ -1,39 +1,43 @@
-import {
-  AuthClient,
-  ExpiresIn,
-  CredentialProvider,
-} from '@gomomento/sdk';
 
-const apiKey = process.env.MOMENTO_API_KEY;
-const authClient = new AuthClient({
-  credentialProvider: CredentialProvider.fromString(apiKey)
-});
-const PUBSUB_CACHE_NAME = 'publish-subscribe-cache';
-const SHARED_CACHE_NAME = 'shared-cache';
+import middy from '@middy/core'
+import ssm from '@middy/ssm';
+import { initAuthClient, createDisposableToken } from './lib/momento.mjs';
 
-const disposableTokenValidity = 60; // minutes
-
-async function createDisposableToken(userSub) {
-  const TOPIC_NAME = userSub;
-  const scopes = {
-    "permissions":
-      [
-        { "role": "subscribeonly", "cache": PUBSUB_CACHE_NAME, "topic": TOPIC_NAME },
-        { "role": "readonly", "cache": SHARED_CACHE_NAME }
-      ]
-  };
-  const tokenResponse = await authClient.generateDisposableToken(
-    scopes,
-    ExpiresIn.minutes(disposableTokenValidity)
-  );
-  return tokenResponse;
-}
-
-export const handler = async (event) => {
-  const userSub = event?.requestContext?.authorizer?.jwt?.claims?.sub;
-  const momentoToken = await createDisposableToken(userSub);
+const createResponse = (statusCode, body) => {
+  const responseBody = JSON.stringify(body);
   return {
-    statusCode: 200,
-    body: JSON.stringify({ momentoToken }),
+    statusCode,
+    headers: { "Content-Type": "application/json" },
+    body: responseBody,
   };
 };
+
+export const lambdaHandler = async (event, context) => {
+  await initAuthClient(context.MOMENTO_API_KEY);
+
+  try {
+    const userSub = event?.requestContext?.authorizer?.jwt?.claims?.sub;
+    const momentoToken = await createDisposableToken(userSub);
+    return createResponse(200, momentoToken);
+  }
+  catch (err) {
+    return createResponse(500, { error: 'Failed to generate token' });
+  }
+
+};
+
+export const handler = middy()
+  .use(
+    ssm({
+      fetchData: {
+        MOMENTO_API_KEY: process.env.MOMENTO_API_KEY_PARAM_NAME
+      },
+      awsClientOptions: {
+        region: 'us-east-1'
+      },
+      setToContext: true,
+      cache: true,
+      cacheExpiry: 5 * 60 * 1000,
+    })
+  )
+  .handler(lambdaHandler)

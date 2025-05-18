@@ -1,23 +1,12 @@
-import {
-    TopicClient, TopicConfigurations, CredentialProvider
-} from "@gomomento/sdk";
 
-const apiKey = process.env.MOMENTO_API_KEY;
-const PUBSUB_CACHE_NAME = 'publish-subscribe-cache';
-const topicClient = new TopicClient({
-    configuration: TopicConfigurations.Lambda.latest(),
-    credentialProvider: CredentialProvider.fromString(apiKey)
-});
+import middy from '@middy/core'
+import ssm from '@middy/ssm';
+import { initTopicClient, publishToTopic } from './lib/momento.mjs';
 
-const publishToTopic = async (userSub, key) => {
-    const topicName = userSub;
-    const type = "ProcessingFailure";
-    const message = JSON.stringify({ key, type });
-    await topicClient.publish(PUBSUB_CACHE_NAME, topicName, message);
-}
+export const lambdaHandler = async (event, context) => {
 
-export const handler = async (event) => {
-    console.log(event);
+    await initTopicClient(context.MOMENTO_API_KEY);
+
     for (const record of event.Records) {
         try {
             const messageBody = JSON.parse(record.body);
@@ -31,3 +20,17 @@ export const handler = async (event) => {
     }
     return;
 };
+
+
+export const handler = middy()
+  .use(
+    ssm({
+      fetchData: {
+        MOMENTO_API_KEY: process.env.MOMENTO_API_KEY_PARAM_NAME,
+      },
+      setToContext: true,
+      cache: true,
+      cacheExpiry: 5 * 60 * 1000,
+    })
+  )
+  .handler(lambdaHandler)
