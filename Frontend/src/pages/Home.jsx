@@ -29,7 +29,7 @@ function Home() {
       const preSignedUrl = await getSignedURL(uniqueFilename, selectedFile.type);
       const res = await uploadFile(selectedFile, preSignedUrl)
       if (res) {
-        addNotification({ notificationMessage: `Add to queue ${selectedFile.name}`, notificationUrl: null });
+        addNotification({ notificationMessage: `Added to queue ${selectedFile.name}`, notificationUrl: null });
         setStatus('processing');
       }
     } catch (err) {
