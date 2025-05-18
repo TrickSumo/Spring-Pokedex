@@ -61,9 +61,7 @@ const History = () => {
                 <h1>My Discoveries</h1>
 
                 <p>Your previous scans.</p>
-                <div className='history-list'>
-                    {console.log(parsedHistory)}
-                    
+                <div className='history-list'>                  
                     {parsedHistory.map((scan, index) => (
                         <div key={scan.scanId} className='history-item' onClick={() => showDetails(index)}>
                             <h2>{scan?.parsedGptResponse?.category}</h2>

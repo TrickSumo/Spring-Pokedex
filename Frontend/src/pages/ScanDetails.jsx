@@ -13,8 +13,6 @@ const ScanDetails = () => {
   useEffect(() => {
     if (scannedDetails?.gptResponse) {
       const data = JSON.parse(scannedDetails.gptResponse);
-      console.log("🟡 data", scannedDetails);
-
       data.key = scannedDetails.key || scannedDetails.scanId;
       setDetails(data);
     }

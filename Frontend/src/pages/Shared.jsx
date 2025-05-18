@@ -32,7 +32,6 @@ const Shared = () => {
       });
 
       const result = await cacheClient.dictionaryFetch(CACHE_NAME, id);
-      console.log("🟢 Result:", result);
 
       switch (result.type) {
         case CacheDictionaryFetchResponse.Hit:
@@ -40,33 +39,28 @@ const Shared = () => {
           result.valueMap().forEach((value, key) => {
             const parsedValue = JSON.parse(value);
             const parsedGPTResponse = JSON.parse(parsedValue.item.gptResponse);
-            const { category, commonName, scientificName, info } = parsedGPTResponse;
-            console.log("🟡 parsedValue", parsedValue.signedUrl);
-            
+            const { category, commonName, scientificName, info } = parsedGPTResponse;          
             const signedUrl = parsedValue.signedUrl;
             setDetails({ category, commonName, scientificName, info, signedUrl });
           });
           break;
         case CacheDictionaryFetchResponse.Miss:
-          console.log(`Dictionary 'test-dictionary' was not found in cache '`);
+          console.log(`Dictionary was not found in cache '`);
           break;
         case CacheDictionaryFetchResponse.Error:
           console.error(
-            `An error occurred while attempting to call cacheDictionaryFetch on dictionary 'test-dictionary' in cache': ${result.errorCode()}: ${result.toString()}`
+            `An error occurred while attempting to call cacheDictionaryFetch on dictionary in cache': ${result.errorCode()}: ${result.toString()}`
           );
           setError(
-            `An error occurred while attempting to call cacheDictionaryFetch on dictionary 'test-dictionary' in cache': ${result.errorCode()}: ${result.toString()}`
+            `An error occurred while attempting to call cacheDictionaryFetch on dictionary in cache': ${result.errorCode()}: ${result.toString()}`
           );
           throw new Error(
-            `An error occurred while attempting to call cacheDictionaryFetch on dictionary 'test-dictionary' in cache': ${result.errorCode()}: ${result.toString()}`
+            `An error occurred while attempting to call cacheDictionaryFetch on dictionary in cache': ${result.errorCode()}: ${result.toString()}`
           );
 
       }
 
     }
-
-    console.log("🟡 momentoDisposableToken", momentoDisposableToken);
-
     if (momentoDisposableToken) fetchData();
   }, [id, momentoDisposableToken]);
 

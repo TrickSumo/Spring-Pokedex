@@ -78,8 +78,6 @@ export const getScanHistory = async () => {
         },
     );
     const { Items } = await response.json();
-    console.log("Scan history:", Items);
-
     return Items;
 }
 

@@ -1,2 +1,2 @@
-# Spring-Pok-dex
+# Spring Pokédex 🌸
 Explore! Identify! Appreciate!

@@ -27,7 +27,6 @@ export const handler = async (event) => {
         });
 
         const response = await docClient.send(command);
-        console.log(response);
         return createResponse(200, response);
     }
     catch (err) {

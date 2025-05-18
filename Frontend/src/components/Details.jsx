@@ -11,9 +11,6 @@ function Details({ details, shared }) {
 
   const { category, commonName, scientificName, info, key, signedUrl } = details;
 
-  console.log( { category, commonName, scientificName, info, key, signedUrl } );
-  
-
   const [shareUrl, setShareUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -35,8 +32,10 @@ function Details({ details, shared }) {
   };
 
   const handleShareButtonClick = async () => {
+    setIsLoading(true);
     const shareDetails = await shareScan(key);
-    // setShareUrl(domainName + "/shared/" + shareDetails.shareId);
+    setIsLoading(false);
+    if (!shareDetails) { alert("Failed to share scan!"); return; }
     setShareUrl(window.location.origin + "/shared/" + shareDetails.shareId);
   }
 
