@@ -8,7 +8,6 @@ export const createSignedCookies = async (userSub, cloudfrontDistributionDomain,
     const url = `${cloudfrontDistributionDomain}/${s3ObjectKey}`;
     const dateLessThan = Math.floor((Date.now() + intervalToAddInMilliseconds) / 1000);
 
-
     const policy = {
         Statement: [
             {
@@ -33,5 +32,4 @@ export const createSignedCookies = async (userSub, cloudfrontDistributionDomain,
     const expires = new Date(dateLessThan * 1000).toUTCString();
 
     return {cookies, expires};
-
 }

@@ -6,7 +6,6 @@ import { getDynamoDBItem } from './lib/dynamodb.mjs';
 import { generateSignedUrl } from './lib/cloudfront.mjs';
 import { initCacheClient, updateCache } from './lib/momento.mjs';
 
-
 const createResponse = (statusCode, body) => {
   const responseBody = JSON.stringify(body);
   return {
@@ -15,7 +14,6 @@ const createResponse = (statusCode, body) => {
     body: responseBody,
   };
 };
-
 
 export const lambdaHandler = async (event, context) => {
 

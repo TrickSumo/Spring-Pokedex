@@ -23,9 +23,7 @@ export const lambdaHandler = async (event, context) => {
 
   const userSub = key.split('/')[1]; // Extract userSub from the key - images are uploaded at /images/userSub/imageName
 
-
   const signedUrl = await generateSignedUrl(key, cloudfrontDistributionDomain, keyPairId, privateKey);
-
   const completion = await createChatCompletion(signedUrl)
 
   const gptResponse = completion.choices[0].message.content;
@@ -39,7 +37,6 @@ export const lambdaHandler = async (event, context) => {
   };
   return response;
 };
-
 
 export const handler = middy()
   .use(

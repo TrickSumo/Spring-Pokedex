@@ -13,7 +13,6 @@ let cacheClient;
 const RATE_LIMIT_CACHE_NAME = 'cache';
 const DAILY_LIMIT = 6;
 
-
 export const initCacheClient = async (apiKey) => {
     if (!cacheClient) {
         logger.info('Initializing Momento cache client');

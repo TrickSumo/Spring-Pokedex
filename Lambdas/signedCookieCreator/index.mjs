@@ -2,7 +2,6 @@ import middy from '@middy/core'
 import ssm from '@middy/ssm';
 import { createSignedCookies } from "./lib/cloudfront.mjs";
 
-
 const createResponse = (statusCode, body, cookieHeaders) => {
     const responseBody = JSON.stringify(body);
     return {
@@ -38,7 +37,6 @@ export const lambdaHandler = async (event, context) => {
         return createResponse(500, { error: 'Failed to create signed cookies!' });
     }
 };
-
 
 export const handler = middy()
     .use(

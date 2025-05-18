@@ -13,7 +13,6 @@ const createResponse = (statusCode, body) => {
     };
 };
 
-
 export const lambdaHandler = async (event, context) => {
 
     await initCacheClient(context.MOMENTO_API_KEY);
@@ -38,7 +37,6 @@ export const lambdaHandler = async (event, context) => {
         return createResponse(500, { error: 'Failed to generate upload URL' });
     }
 };
-
 
 export const handler = middy()
     .use(

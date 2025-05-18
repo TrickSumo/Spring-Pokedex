@@ -21,7 +21,6 @@ export const lambdaHandler = async (event, context) => {
     return;
 };
 
-
 export const handler = middy()
   .use(
     ssm({
