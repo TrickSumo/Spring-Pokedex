@@ -6,6 +6,4 @@ Explore! Identify! Appreciate!
 
 [![Watch the video](https://img.youtube.com/vi/Nl4IMLp10hQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=Nl4IMLp10hQ)
 
-!
-
 
