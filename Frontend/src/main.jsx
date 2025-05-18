@@ -12,11 +12,12 @@ import Shared from './pages/Shared.jsx';
 const awsRegion = import.meta.env.VITE_AWS_REGION;
 const congitoUserPoolID = import.meta.env.VITE_COGNITO_USER_POOL_ID;
 const congitoUserPoolClientID = import.meta.env.VITE_COGNITO_USER_POOL_CLIENT_ID;
+const redirect_uri = import.meta.env.VITE_REDIRECT_URI;
 
 const cognitoAuthConfig = {
   authority: `https://cognito-idp.${awsRegion}.amazonaws.com/${congitoUserPoolID}`,
   client_id: congitoUserPoolClientID,
-  redirect_uri: "http://localhost:5173/auth", //"https://staging.d223782eos6ban.amplifyapp.com/auth"
+  redirect_uri: redirect_uri,
   response_type: "code",
   scope: "phone openid email",
 };
