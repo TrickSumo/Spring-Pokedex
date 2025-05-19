@@ -32,9 +32,6 @@ export const handler = middy()
       fetchData: {
         MOMENTO_API_KEY: process.env.MOMENTO_API_KEY_PARAM_NAME
       },
-      awsClientOptions: {
-        region: 'us-east-1'
-      },
       setToContext: true,
       cache: true,
       cacheExpiry: 5 * 60 * 1000,

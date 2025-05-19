@@ -53,9 +53,6 @@ export const handler = middy()
         CLOUDFRONT_KEY_PAIR_ID: process.env.CLOUDFRONT_KEY_PAIR_ID_PARAM_NAME,
         CLOUDFRONT_PRIVATE_KEY: process.env.CLOUDFRONT_PRIVATE_KEY_PARAM_NAME,
       },
-      awsClientOptions: {
-        region: 'us-east-1'
-      },
       setToContext: true,
       cache: true,
       cacheExpiry: 5 * 60 * 1000,

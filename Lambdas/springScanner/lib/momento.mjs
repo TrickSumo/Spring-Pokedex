@@ -1,13 +1,11 @@
 import {
     TopicClient, TopicConfigurations, CredentialProvider
 } from "@gomomento/sdk";
-import { Logger } from '@aws-lambda-powertools/logger';
+import { logger } from "./logger.mjs";
 
 const PUBSUB_CACHE_NAME = 'publish-subscribe-cache';
 
 let topicClient;
-
-const logger = new Logger({ serviceName: 'shareScan-lambda' });
 
 export const initTopicClient = async (apiKey) => {
     if (!topicClient) {
@@ -20,9 +18,16 @@ export const initTopicClient = async (apiKey) => {
     }
 }
 
-export const publishToTopic = async (userSub, gptResponse, key) => {
+export const publishSuccessToTopic = async (userSub, gptResponse, key) => {
   const topicName = userSub;
   const type = "ProcessingSuccess";
   const message = JSON.stringify({ gptResponse, key, type });
   await topicClient.publish(PUBSUB_CACHE_NAME, topicName, message);
+}
+
+export const publishFailureToTopic = async (userSub, key) => {
+    const topicName = userSub;
+    const type = "ProcessingFailure";
+    const message = JSON.stringify({ key, type });
+    await topicClient.publish(PUBSUB_CACHE_NAME, topicName, message);
 }
